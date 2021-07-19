@@ -1,9 +1,15 @@
-import torch
-import torchaudio
+import pytest
 
-from  ml.audio.models.backbone.vggish import get_VGGish
+from fixtures import *
 
-waveform, sr = torchaudio.load('/zdata/projects/shared/datasets/AUDIOSET/balanced_eval_44100_1_pcm32le/007P6bFgRCU.wav')
-model = get_VGGish()
-out = model('/zdata/projects/shared/datasets/AUDIOSET/balanced_eval_44100_1_pcm32le/007P6bFgRCU.wav')
-print(out)
+@pytest.fixture
+def model():
+    from ml.audio.models import VGGishModel
+    model = VGGishModel(pretrained=True)
+    return model
+
+@pytest.mark.essential
+def test_vggish(model, wav_file):
+    out = model(wav_file)
+    assert list(out.shape) == [10, 128]
+    print(out.shape)
